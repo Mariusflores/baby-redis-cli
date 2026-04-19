@@ -54,7 +54,7 @@ public class BabyRedisCli {
         BabyRedisClient client = new BabyRedisClient("localhost", 6379);
 
         List<String> allowedCommands =
-                Arrays.asList("SET", "GET", "DELETE", "QUIT", "SADD", "SREM", "SISMEMBER", "SMEMBERS", "SIM", "SM", "EXPIRE", "EXP", "TTL");
+                Arrays.asList("SET", "GET", "DELETE", "QUIT", "SADD", "SREM", "SISMEMBER", "SMEMBERS", "SIM", "SM", "EXPIRE", "EXP", "TTL", "PING");
 
 
         Scanner scanner = new Scanner(System.in);
