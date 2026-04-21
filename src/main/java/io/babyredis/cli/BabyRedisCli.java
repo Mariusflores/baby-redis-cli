@@ -38,7 +38,7 @@ public class BabyRedisCli {
         System.out.println("Expiry commands:");
         System.out.println(" EXPIRE <key> <seconds>     Sets expiry countdown");
         System.out.println(" TTL <key>                  Shows how long until key expires");
-        System.out.println("Other Commands");
+        System.out.println("Other Commands:");
         System.out.println("  HELP                     Show this message");
         System.out.println("  QUIT                     Disconnect");
         System.out.println("  PING                     Check if server is operational");
