@@ -52,3 +52,4 @@ java -jar target/baby-redis-cli.jar
 
 - [baby-redis](https://github.com/mariusflores/baby-redis) — the server
 - [baby-redis-client](https://github.com/mariusflores/baby-redis-client) — the client library this CLI uses
+- [baby-redis-protocol](https://github.com/mariusflores/baby-redis-protocol) — shared RESP protocol library
