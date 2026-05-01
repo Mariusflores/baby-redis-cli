@@ -89,7 +89,7 @@ public class BabyRedisCli {
                 continue;
             }
             // Send the valid command to the Baby Redis server using the BabyRedisClient instance and print the response received from the server.
-            String response = client.send(line);
+            String response = client.sendRaw(line);
             System.out.println(response);
         }
 
