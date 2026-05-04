@@ -17,6 +17,20 @@ import java.util.Scanner;
 
 public class BabyRedisCli {
 
+    public static final List<String> allowedCommands =
+                Arrays.asList(
+                    // String commands
+                    "SET", "GET", "DELETE",
+                    // Set commands  
+                    "SADD", "SREM", "SISMEMBER", "SMEMBERS", "SIM", "SM", 
+                    // Expiry commands
+                    "EXPIRE", "EXP", "TTL", 
+                    // Other commands
+                    "KEYS", 
+                    "PING");
+
+
+
     /**
      * Displays a help message with the available commands and their descriptions.
      * This method is called when the user types "HELP" in the CLI,
@@ -39,9 +53,10 @@ public class BabyRedisCli {
         System.out.println(" EXPIRE <key> <seconds>     Sets expiry countdown");
         System.out.println(" TTL <key>                  Shows how long until key expires");
         System.out.println("Other Commands:");
+        System.out.println("  KEYS *                   List all keys");
+        System.out.println("  PING                     Check if server is operational");
         System.out.println("  HELP                     Show this message");
         System.out.println("  QUIT                     Disconnect");
-        System.out.println("  PING                     Check if server is operational");
         System.out.println("==================");
 
     }
@@ -57,40 +72,37 @@ public class BabyRedisCli {
     public static void main(String[] args) {
         BabyRedisClient client = new BabyRedisClient("localhost", 6379);
 
-        List<String> allowedCommands =
-                Arrays.asList("SET", "GET", "DELETE", "QUIT", "SADD", "SREM", "SISMEMBER", "SMEMBERS", "SIM", "SM", "EXPIRE", "EXP", "TTL", "PING");
 
+        try (Scanner scanner = new Scanner(System.in)) {
+            BabyRedisCli.help();
 
-        Scanner scanner = new Scanner(System.in);
+            while (scanner.hasNext()) {
+                String line = scanner.nextLine();
 
-        BabyRedisCli.help();
+                // Show help if user types HELP, continue to next iteration to avoid sending HELP command to server
+                if (line.equalsIgnoreCase("HELP")) {
+                    BabyRedisCli.help();
+                    continue;
+                }
 
-        while (scanner.hasNext()) {
-            String line = scanner.nextLine();
+                String[] parts = line.split("\\s+");
+                String command = parts[0].toUpperCase();
 
-            // Show help if user types HELP, continue to next iteration to avoid sending HELP command to server
-            if (line.equalsIgnoreCase("HELP")) {
-                BabyRedisCli.help();
-                continue;
+                // Handle QUIT command to close the client connection and exit the loop
+                if (command.equals("QUIT")) {
+                    client.close();
+                    break;
+                }
+
+                // Validate the command against the list of allowed commands. If the command is not recognized, print an error message and prompt the user again.
+                if (!allowedCommands.contains(command)) {
+                    System.out.println("Unknown command. Type HELP.");
+                    continue;
+                }
+                // Send the valid command to the Baby Redis server using the BabyRedisClient instance and print the response received from the server.
+                String response = client.sendRaw(line);
+                System.out.println(response);
             }
-
-            String[] parts = line.split("\\s+");
-            String command = parts[0].toUpperCase();
-
-            // Handle QUIT command to close the client connection and exit the loop
-            if (command.equals("QUIT")) {
-                client.close();
-                break;
-            }
-
-            // Validate the command against the list of allowed commands. If the command is not recognized, print an error message and prompt the user again.
-            if (!allowedCommands.contains(command)) {
-                System.out.println("Unknown command. Type HELP.");
-                continue;
-            }
-            // Send the valid command to the Baby Redis server using the BabyRedisClient instance and print the response received from the server.
-            String response = client.sendRaw(line);
-            System.out.println(response);
         }
 
     }
