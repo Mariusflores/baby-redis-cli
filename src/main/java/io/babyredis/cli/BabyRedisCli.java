@@ -27,6 +27,7 @@ public class BabyRedisCli {
                     "EXPIRE", "EXP", "TTL", 
                     // Other commands
                     "KEYS", 
+                    "FLUSHDB",
                     "PING");
 
 
@@ -53,7 +54,8 @@ public class BabyRedisCli {
         System.out.println(" EXPIRE <key> <seconds>     Sets expiry countdown");
         System.out.println(" TTL <key>                  Shows how long until key expires");
         System.out.println("Other Commands:");
-        System.out.println("  KEYS *                   List all keys");
+        System.out.println("  KEYS [* | <pattern>*]     List all keys matching pattern, or all keys if no argument");
+        System.out.println("  FLUSHDB [* | <pattern>*]  Clear all keys matching pattern, or all keys if no argument");
         System.out.println("  PING                     Check if server is operational");
         System.out.println("  HELP                     Show this message");
         System.out.println("  QUIT                     Disconnect");
@@ -98,6 +100,38 @@ public class BabyRedisCli {
                 if (!allowedCommands.contains(command)) {
                     System.out.println("Unknown command. Type HELP.");
                     continue;
+                }
+
+                if (command.equals("FLUSHDB")) {
+                    // FLUSHDB, FLUSHDB *, or FLUSHDB * --confirm
+                    boolean isFullFlush = false;
+                    boolean hasConfirm = false;
+                    if (parts.length == 1) {
+                        isFullFlush = true;
+                    } else if (parts.length == 2 && (parts[1].equals("*") || parts[1].equals("--confirm"))) {
+                        isFullFlush = parts[1].equals("*");
+                        hasConfirm = parts[1].equals("--confirm");
+                    } else if (parts.length == 3 && parts[1].equals("*") && parts[2].equals("--confirm")) {
+                        isFullFlush = true;
+                        hasConfirm = true;
+                    }
+
+                    if (isFullFlush) {
+                        if (!hasConfirm) {
+                            System.out.println("Are you sure you want to flush the entire database? Use FLUSHDB --confirm or FLUSHDB * --confirm to confirm.");
+                            continue;
+                        } else {
+                            // Rewrite line to FLUSHDB * for server
+                            line = "FLUSHDB *";
+                        }
+                    } else if (parts.length == 2 && !parts[1].equals("*") && !parts[1].equals("--confirm")) {
+                        // FLUSHDB <pattern>* (pattern flush, no confirmation needed)
+                        // do nothing, allow to proceed
+                    } else if (parts.length == 3 && !parts[1].equals("*") && parts[2].equals("--confirm")) {
+                        // FLUSHDB <pattern>* --confirm (pattern flush, --confirm is ignored)
+                        // Remove --confirm for server
+                        line = "FLUSHDB " + parts[1];
+                    }
                 }
                 // Send the valid command to the Baby Redis server using the BabyRedisClient instance and print the response received from the server.
                 String response = client.sendRaw(line);
