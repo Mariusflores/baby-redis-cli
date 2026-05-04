@@ -7,7 +7,7 @@
 
     <groupId>io.babyredis</groupId>
     <artifactId>baby-redis-cli</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 
     <properties>
         <java.version>21</java.version>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>io.babyredis</groupId>
             <artifactId>baby-redis-client</artifactId>
-            <version>0.2.0</version>
+            <version>0.3.0</version>
         </dependency>
     </dependencies>
 
