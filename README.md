@@ -9,6 +9,12 @@ development and testing.
 🚧 **In development.** Recently separated from the server repo into
 its own module.
 
+
+## Recent Updates
+
+- **FLUSHDB safety:** Full database flush (no args or '*') now requires --confirm to prevent accidental data loss.
+- **Pattern support:** Both KEYS and FLUSHDB support no arguments, '*', or '<pattern>*' (e.g., test:*) for pattern-based operations.
+
 ## Features
 
 - Interactive REPL for sending commands to baby-redis
@@ -29,8 +35,28 @@ its own module.
 | `SMEMBERS key` | List all set members |
 | `EXPIRE key seconds` | Set a TTL on a key |
 | `TTL key` | Check remaining TTL |
+| `KEYS [* | <pattern>*]` | List all keys (all if no argument, '*' or pattern match) |
+| `FLUSHDB [* | <pattern>*]` | Clear all keys (all if no argument, '*' or pattern match; requires --confirm for full flush) |
 | `HELP` | Show available commands |
 | `QUIT` | Disconnect |
+## Safety for FLUSHDB
+
+To prevent accidental data loss, running `FLUSHDB` or `FLUSHDB *` now requires explicit confirmation:
+
+```
+FLUSHDB --confirm
+FLUSHDB * --confirm
+```
+
+Pattern-based flushes (e.g., `FLUSHDB test:*`) do not require confirmation.
+
+## Pattern Support for KEYS and FLUSHDB
+
+Both `KEYS` and `FLUSHDB` support:
+
+- No arguments (all keys)
+- `*` (all keys)
+- `<pattern>*` (e.g., `test:*`)
 
 ## Prerequisites
 
