@@ -4,8 +4,6 @@ package io.babyredis.cli;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
-
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
@@ -80,16 +78,12 @@ public class BabyRedisCli {
      */
     public static void main(String[] args) {
         BabyRedisClient client = new BabyRedisClient("localhost", 6379);
-
-
-        try (Scanner scanner = new Scanner(System.in)) {
-
+        try {
             Terminal terminal = TerminalBuilder.builder()
                     .system(true)
                     .build();
 
             LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
-            
 
             while (true) {
                 String line = reader.readLine("baby-redis> ").trim();
@@ -151,7 +145,6 @@ public class BabyRedisCli {
                 System.out.println(response + "\n");
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
