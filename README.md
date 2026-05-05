@@ -6,12 +6,11 @@ development and testing.
 
 ## Status
 
-🚧 **In development.** Recently separated from the server repo into
-its own module.
-
+🚧 **In development.** May be updated with methods as Baby Redis evolves
 
 ## Recent Updates
 
+- **JLine CLI** Updated to use JLine for a better CLI experience than interactive scanner
 - **FLUSHDB safety:** Full database flush (no args or '*') now requires --confirm to prevent accidental data loss.
 - **Pattern support:** Both KEYS and FLUSHDB support no arguments, '*', or '<pattern>*' (e.g., test:*) for pattern-based operations.
 
