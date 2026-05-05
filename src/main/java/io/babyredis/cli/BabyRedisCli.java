@@ -1,9 +1,9 @@
 package io.babyredis.cli;
 
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
@@ -12,34 +12,36 @@ import org.jline.terminal.TerminalBuilder;
 import io.babyredis.client.BabyRedisClient;
 
 /**
- * A simple command-line interface (CLI) for interacting with a Baby Redis server.
- * The CLI allows users to enter Redis commands and see the responses from the server.
- * It provides a help command to display available commands and their descriptions,
+ * A simple command-line interface (CLI) for interacting with a Baby Redis
+ * server.
+ * The CLI allows users to enter Redis commands and see the responses from the
+ * server.
+ * It provides a help command to display available commands and their
+ * descriptions,
  * and a quit command to disconnect from the server.
- * The CLI uses a BabyRedisClient instance to send commands to the server and handle the communication.
+ * The CLI uses a BabyRedisClient instance to send commands to the server and
+ * handle the communication.
  */
 
 public class BabyRedisCli {
 
-    public static final List<String> allowedCommands =
-                Arrays.asList(
-                    // String commands
-                    "SET", "GET", "DELETE",
-                    // Set commands  
-                    "SADD", "SREM", "SISMEMBER", "SMEMBERS", "SIM", "SM", 
-                    // Expiry commands
-                    "EXPIRE", "EXP", "TTL", 
-                    // Other commands
-                    "KEYS", 
-                    "FLUSHDB",
-                    "PING");
-
-
+    public static final List<String> allowedCommands = Arrays.asList(
+            // String commands
+            "SET", "GET", "DELETE",
+            // Set commands
+            "SADD", "SREM", "SISMEMBER", "SMEMBERS", "SIM", "SM",
+            // Expiry commands
+            "EXPIRE", "EXP", "TTL",
+            // Other commands
+            "KEYS",
+            "FLUSHDB",
+            "PING");
 
     /**
      * Displays a help message with the available commands and their descriptions.
      * This method is called when the user types "HELP" in the CLI,
-     * providing guidance on how to use the various Redis commands supported by the Baby Redis server.
+     * providing guidance on how to use the various Redis commands supported by the
+     * Baby Redis server.
      */
     public static void help() {
         System.out.println("=== Baby Redis ===");
@@ -64,15 +66,19 @@ public class BabyRedisCli {
         System.out.println("  HELP                     Show this message");
         System.out.println("  QUIT                     Disconnect");
         System.out.println("==================\n");
-        
 
     }
 
     /**
-     * The main method that runs the Baby Redis CLI. It creates a BabyRedisClient instance to connect to the Redis server, and then enters a loop to read user input from the command line.
-     * The user can enter Redis commands, which are sent to the server using the BabyRedisClient instance.
-     * The CLI also handles special commands like "HELP" to display the help message and "QUIT" to disconnect from the
-     * server. The CLI validates the commands entered by the user and prints the responses received from the server.
+     * The main method that runs the Baby Redis CLI. It creates a BabyRedisClient
+     * instance to connect to the Redis server, and then enters a loop to read user
+     * input from the command line.
+     * The user can enter Redis commands, which are sent to the server using the
+     * BabyRedisClient instance.
+     * The CLI also handles special commands like "HELP" to display the help message
+     * and "QUIT" to disconnect from the
+     * server. The CLI validates the commands entered by the user and prints the
+     * responses received from the server.
      *
      * @param args Command-line arguments (not used in this application).
      */
@@ -85,10 +91,18 @@ public class BabyRedisCli {
 
             LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
 
-            while (true) {
-                String line = reader.readLine("baby-redis> ").trim();
+            System.out.println("Connected to baby-redis. Type HELP for commands, QUIT to exit.");
 
-                // Show help if user types HELP, continue to next iteration to avoid sending HELP command to server
+            while (true) {
+                String line = reader.readLine("baby-redis> ");
+                if (line == null)
+                    break; // Ctrl+D
+                line = line.trim();
+                if (line.isEmpty())
+                    continue; // ignore empty
+
+                // Show help if user types HELP, continue to next iteration to avoid sending
+                // HELP command to server
                 if (line.equalsIgnoreCase("HELP")) {
                     BabyRedisCli.help();
                     continue;
@@ -103,7 +117,8 @@ public class BabyRedisCli {
                     break;
                 }
 
-                // Validate the command against the list of allowed commands. If the command is not recognized, print an error message and prompt the user again.
+                // Validate the command against the list of allowed commands. If the command is
+                // not recognized, print an error message and prompt the user again.
                 if (!allowedCommands.contains(command)) {
                     System.out.println("Unknown command. Type HELP.");
                     continue;
@@ -125,7 +140,8 @@ public class BabyRedisCli {
 
                     if (isFullFlush) {
                         if (!hasConfirm) {
-                            System.out.println("Are you sure you want to flush the entire database? Use FLUSHDB --confirm or FLUSHDB * --confirm to confirm.");
+                            System.out.println(
+                                    "Are you sure you want to flush the entire database? Use FLUSHDB --confirm or FLUSHDB * --confirm to confirm.");
                             continue;
                         } else {
                             // Rewrite line to FLUSHDB * for server
@@ -140,7 +156,8 @@ public class BabyRedisCli {
                         line = "FLUSHDB " + parts[1];
                     }
                 }
-                // Send the valid command to the Baby Redis server using the BabyRedisClient instance and print the response received from the server.
+                // Send the valid command to the Baby Redis server using the BabyRedisClient
+                // instance and print the response received from the server.
                 String response = client.sendRaw(line);
                 System.out.println(response + "\n");
             }
