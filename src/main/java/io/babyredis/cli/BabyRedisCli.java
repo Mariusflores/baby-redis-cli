@@ -1,11 +1,17 @@
 package io.babyredis.cli;
 
 
-import io.babyredis.client.BabyRedisClient;
-
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
+
+import io.babyredis.client.BabyRedisClient;
 
 /**
  * A simple command-line interface (CLI) for interacting with a Baby Redis server.
@@ -59,7 +65,8 @@ public class BabyRedisCli {
         System.out.println("  PING                     Check if server is operational");
         System.out.println("  HELP                     Show this message");
         System.out.println("  QUIT                     Disconnect");
-        System.out.println("==================");
+        System.out.println("==================\n");
+        
 
     }
 
@@ -76,10 +83,16 @@ public class BabyRedisCli {
 
 
         try (Scanner scanner = new Scanner(System.in)) {
-            BabyRedisCli.help();
 
-            while (scanner.hasNext()) {
-                String line = scanner.nextLine();
+            Terminal terminal = TerminalBuilder.builder()
+                    .system(true)
+                    .build();
+
+            LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
+            
+
+            while (true) {
+                String line = reader.readLine("baby-redis> ").trim();
 
                 // Show help if user types HELP, continue to next iteration to avoid sending HELP command to server
                 if (line.equalsIgnoreCase("HELP")) {
@@ -135,8 +148,11 @@ public class BabyRedisCli {
                 }
                 // Send the valid command to the Baby Redis server using the BabyRedisClient instance and print the response received from the server.
                 String response = client.sendRaw(line);
-                System.out.println(response);
+                System.out.println(response + "\n");
             }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
     }
